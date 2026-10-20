@@ -27,16 +27,27 @@
       33% { transform: scale(1.4); opacity: 0.8; }
       66% { transform: scale(1.4); opacity: 0.8; }
     }
+    @media print {
+      body { background: white !important; color: black !important; }
+      .glass-card { background: white !important; border: 1px solid #ccc !important; color: black !important; backdrop-filter: none; }
+      button, select, input, .no-print { display: none !important; }
+      #chat-box { max-height: none !important; overflow: visible !important; background: white !important; border: none !important; color: black !important; }
+    }
   </style>
 </head>
 <body class="p-4 md:p-8">
   <div class="max-w-4xl mx-auto space-y-6">
     <!-- Header -->
-    <header class="text-center space-y-2 py-4">
-      <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-sky-300 to-indigo-300">
-        ✨ Meditation & AI Companion
-      </h1>
-      <p class="text-slate-400 text-sm">Peaceful meditation and simple conversations with spiritual guides</p>
+    <header class="text-center space-y-2 py-4 flex flex-col md:flex-row items-center justify-between border-b border-slate-800 pb-4">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-sky-300 to-indigo-300">
+          ✨ Meditation & AI Companion
+        </h1>
+        <p class="text-slate-400 text-sm">Peaceful meditation and simple conversations with spiritual guides</p>
+      </div>
+      <button onclick="window.print()" class="no-print mt-4 md:mt-0 bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2">
+        <i class="fa-solid fa-file-pdf"></i> Export PDF Summary
+      </button>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -95,8 +106,8 @@
         </div>
 
         <!-- Input Area -->
-        <div class="flex gap-2 mt-4">
-          <input type="text" id="user-input" placeholder="Type a simple question..." class="flex-1 bg-slate-800 border border-slate-700 text-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-400">
+        <div class="flex gap-2 mt-4 no-print">
+          <input type="text" id="user-input" placeholder="Type a simple question..." class="flex-1 bg-slate-800 border border-slate-700 text-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-400" onkeypress="handleKeyPress(event)">
           <button onclick="sendMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
             Send
           </button>
@@ -144,22 +155,112 @@
       document.getElementById('start-btn').innerText = "Start Session";
     }
 
-    // Interactive Responses for Spiritual Guides
+    // 100 Spiritual Phrases (33-34 per guide)
     const responses = {
       "Bashar": [
-        "Act on your excitement with no expectation!",
-        "You are always supported by the universe.",
-        "Stay present and trust your inner joy."
+        "Act on your excitement with no expectation of a specific outcome.",
+        "You are always fully supported by the universe.",
+        "Stay present and trust your inner joy.",
+        "Follow your highest passion with integrity.",
+        "Every moment is a fresh new beginning.",
+        "Choose the perspective that brings you peace.",
+        "Your beliefs create your absolute reality.",
+        "Let go of how you think things should happen.",
+        "Excitement is your compass to your true path.",
+        "You are a magnificent infinite being of light.",
+        "Trust the timing of your life and unfoldment.",
+        "Breathe deeply and release all heavy resistance.",
+        "The universe loves you unconditionally right now.",
+        "Listen to the quiet whisper of your intuition.",
+        "Embrace change as an adventure of consciousness.",
+        "You carry the power to transform your entire world.",
+        "Simplicity and clarity bring immediate alignment.",
+        "Be bold and express your authentic self freely.",
+        "Joy is your natural and eternal state of being.",
+        "Every single challenge holds a hidden gift.",
+        "Step forward into the unknown with total excitement.",
+        "Allow yourself to receive the abundance around you.",
+        "Peace begins the moment you accept what is.",
+        "Your imagination is the blueprint of your future.",
+        "Connect with your heart and feel the expansion.",
+        "Letting go of control is true spiritual freedom.",
+        "Shine your unique light without any hesitation.",
+        "Harmony is found within, never in the outside world.",
+        "Everything in your reality is a perfect mirror.",
+        "Celebrate who you are right at this very second.",
+        "Open your mind to infinite new possibilities.",
+        "You are exactly where you need to be to grow.",
+        "Breathe out fear and breathe in pure love."
       ],
       "Eckhart Tolle": [
         "Be here in the present moment.",
-        "Observe your thoughts without judgment.",
-        "Peace is already inside you right now."
+        "Observe your thoughts without any judgment.",
+        "Peace is already inside you right now.",
+        "Realize that the present moment is all you ever have.",
+        "Accept this moment as if you had chosen it.",
+        "You are not your busy and restless thoughts.",
+        "Stess is caused by being here but wanting to be there.",
+        "True intelligence operates silently beyond the mind.",
+        "Feel the aliveness inside your physical body.",
+        "Whenever you recognize illusion, the illusion dissolves.",
+        "Surrender to what is and let go of inner struggle.",
+        "Awareness is the greatest agent for positive change.",
+        "Look at a tree or a flower without naming it.",
+        "Silence is the birthplace of true creativity.",
+        "Drop into the depth of now and find complete rest.",
+        "Your true nature is timeless consciousness itself.",
+        "Let go of mental labels and simply experience life.",
+        "Unhappiness cannot truly exist in the conscious present.",
+        "Listen to the space between words and sounds.",
+        "Forgiveness means letting go of your past story.",
+        "Find the still point at the center of your life.",
+        "Being deeply rooted in the now brings lasting grace.",
+        "Observe the ego and do not take it personally.",
+        "Contentment is independent of outer conditions.",
+        "Rest in the unmanifested realm of pure spirit.",
+        "Every habit is an unconscious repetition of the past.",
+        "Acknowledgment of the good already present is true wealth.",
+        "Let the breath anchor you back to safety.",
+        "Space and stillness are your closest spiritual allies.",
+        "Step out of the time trap and awaken today.",
+        "Love does not want or fear anything.",
+        "Peace is the absence of mental resistance.",
+        "Be the silent watcher of your own experience."
       ],
       "Abraham Hicks": [
-        "Feel good first, and everything follows!",
-        "You are in the vortex when you feel joy.",
-        "All is well, and you are doing fine."
+        "Feel good first, and everything else follows naturally!",
+        "You are in the vortex when you feel pure joy.",
+        "All is well, and you are doing wonderfully fine.",
+        "Appreciation is the highest vibrational frequency.",
+        "Nothing is more important than that you feel good.",
+        "The universe is constantly responding to your alignment.",
+        "You can be, do, or have anything you desire.",
+        "Relax and let the stream of wellbeing carry you.",
+        "Look for things that make you feel joyful today.",
+        "Your power lies entirely in the present moment.",
+        "Intention sets the energy flowing in your life.",
+        "You are a powerful creator shaping your own reality.",
+        "Stop pushing against things and simply allow.",
+        "Joy is your birthright and natural guidance system.",
+        "Expect wonderful things to unfold for you effortlessly.",
+        "The contrast you experience helps you clarify your desires.",
+        "Praise is the vibration of pure love and connection.",
+        "Treat yourself with kindness and gentle patience.",
+        "Align with your source energy and feel the power.",
+        "Life is supposed to be fun and deeply satisfying.",
+        "Release the oars and let the river take you forward.",
+        "You are loved beyond measure by the universe.",
+        "Eagerness is the vibration of joyful anticipation.",
+        "Focus on what feels good right here, right now.",
+        "Your clarity comes from living your vibrant life.",
+        "Allow the well-being that is naturally yours to flow.",
+        "Success is a state of joyful expectation.",
+        "Speak words of encouragement to your own soul.",
+        "You are the eternal creator of your destiny.",
+        "Grateful hearts attract wonderful treasures daily.",
+        "Laugh often and let your spirit soar high.",
+        "There is nothing to fix, only love to experience.",
+        "You are expanding into greater joy every day."
       ]
     };
 
@@ -182,6 +283,12 @@
         chatBox.innerHTML += `<div class="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20"><strong class="text-amber-300">${guide}:</strong> ${randomReply}</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
       }, 600);
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
     }
   </script>
 </body>
