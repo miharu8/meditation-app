@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meditation & AI Companion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #172554 100%);
+      min-height: 100vh;
+      color: #f8fafc;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .breath-circle {
+      animation: breathe 12s infinite ease-in-out;
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      33% { transform: scale(1.4); opacity: 0.8; }
+      66% { transform: scale(1.4); opacity: 0.8; }
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <header class="text-center space-y-2 py-4">
+      <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-sky-300 to-indigo-300">
+        ✨ Meditation & AI Companion
+      </h1>
+      <p class="text-slate-400 text-sm">Peaceful meditation and simple conversations with spiritual guides</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Meditation Section -->
+      <section class="glass-card rounded-2xl p-6 flex flex-col items-center justify-between space-y-6">
+        <h2 class="text-xl font-semibold text-slate-200 flex items-center gap-2">
+          <i class="fa-solid fa-wind text-teal-400"></i> Breathing Space
+        </h2>
+
+        <!-- Visual Breathing Assistant -->
+        <div class="relative w-48 h-48 flex items-center justify-center my-4">
+          <div class="breath-circle absolute inset-0 rounded-full bg-teal-500/20 blur-md"></div>
+          <div class="w-32 h-32 rounded-full border-2 border-teal-400/40 flex items-center justify-center text-center p-2 z-10">
+            <span id="breath-text" class="text-teal-300 text-sm font-medium">Breathe In...</span>
+          </div>
+        </div>
+
+        <!-- Timer Controls -->
+        <div class="w-full space-y-3">
+          <div class="flex justify-between text-slate-300 text-sm">
+            <span>Timer</span>
+            <span id="timer-display" class="font-mono text-teal-400">05:00</span>
+          </div>
+          <div class="flex gap-2">
+            <button id="start-btn" onclick="toggleTimer()" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-medium py-2 rounded-xl transition">
+              Start Session
+            </button>
+            <button onclick="resetTimer()" class="px-4 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 rounded-xl transition">
+              Reset
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Guide Chat Section -->
+      <section class="glass-card rounded-2xl p-6 flex flex-col justify-between h-[450px]">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-sparkles text-amber-400"></i> Talk to AI Guide
+            </h2>
+            <select id="guide-select" class="bg-slate-800 border border-slate-700 text-xs text-amber-300 rounded-lg p-2 focus:outline-none">
+              <option value="Bashar">Bashar (Excitement & Alignment)</option>
+              <option value="Eckhart Tolle">Eckhart Tolle (Present Moment)</option>
+              <option value="Abraham Hicks">Abraham Hicks (Vibration & Joy)</option>
+            </select>
+          </div>
+
+          <!-- Chat Box -->
+          <div id="chat-box" class="h-64 overflow-y-auto space-y-3 p-3 bg-slate-900/50 rounded-xl text-sm border border-slate-800">
+            <div class="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20">
+              <span id="guide-name" class="font-bold text-amber-300 block mb-1">Bashar:</span>
+              <p class="text-slate-200" id="guide-msg">Hello Haru! Follow your highest excitement today. What is on your mind?</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="flex gap-2 mt-4">
+          <input type="text" id="user-input" placeholder="Type a simple question..." class="flex-1 bg-slate-800 border border-slate-700 text-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-400">
+          <button onclick="sendMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+            Send
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Simple Timer Logic
+    let secondsLeft = 300;
+    let timerInterval = null;
+
+    function updateDisplay() {
+      const mins = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+      const secs = String(secondsLeft % 60).padStart(2, '0');
+      document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('start-btn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerText = "Resume Session";
+      } else {
+        btn.innerText = "Pause Session";
+        timerInterval = setInterval(() => {
+          if (secondsLeft > 0) {
+            secondsLeft--;
+            updateDisplay();
+          } else {
+            clearInterval(timerInterval);
+            alert("Meditation complete. Take a deep breath!");
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      secondsLeft = 300;
+      updateDisplay();
+      document.getElementById('start-btn').innerText = "Start Session";
+    }
+
+    // Interactive Responses for Spiritual Guides
+    const responses = {
+      "Bashar": [
+        "Act on your excitement with no expectation!",
+        "You are always supported by the universe.",
+        "Stay present and trust your inner joy."
+      ],
+      "Eckhart Tolle": [
+        "Be here in the present moment.",
+        "Observe your thoughts without judgment.",
+        "Peace is already inside you right now."
+      ],
+      "Abraham Hicks": [
+        "Feel good first, and everything follows!",
+        "You are in the vortex when you feel joy.",
+        "All is well, and you are doing fine."
+      ]
+    };
+
+    function sendMessage() {
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatBox = document.getElementById('chat-box');
+      const guide = document.getElementById('guide-select').value;
+
+      // User Message
+      chatBox.innerHTML += `<div class="bg-slate-800 p-3 rounded-lg text-slate-300 border border-slate-700"><strong>You:</strong> ${text}</div>`;
+      input.value = '';
+
+      // AI Guide Response
+      setTimeout(() => {
+        const guideList = responses[guide];
+        const randomReply = guideList[Math.floor(Math.random() * guideList.length)];
+        chatBox.innerHTML += `<div class="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20"><strong class="text-amber-300">${guide}:</strong> ${randomReply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 600);
+    }
+  </script>
+</body>
+</html>
