@@ -1,295 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meditation & AI Companion</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #172554 100%);
-      min-height: 100vh;
-      color: #f8fafc;
-    }
-    .glass-card {
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .breath-circle {
-      animation: breathe 12s infinite ease-in-out;
-    }
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); opacity: 0.4; }
-      33% { transform: scale(1.4); opacity: 0.8; }
-      66% { transform: scale(1.4); opacity: 0.8; }
-    }
-    @media print {
-      body { background: white !important; color: black !important; }
-      .glass-card { background: white !important; border: 1px solid #ccc !important; color: black !important; backdrop-filter: none; }
-      button, select, input, .no-print { display: none !important; }
-      #chat-box { max-height: none !important; overflow: visible !important; background: white !important; border: none !important; color: black !important; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meditation & AI Companion</title>
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="p-4 md:p-8">
-  <div class="max-w-4xl mx-auto space-y-6">
-    <!-- Header -->
-    <header class="text-center space-y-2 py-4 flex flex-col md:flex-row items-center justify-between border-b border-slate-800 pb-4">
-      <div>
-        <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-300 via-sky-300 to-indigo-300">
-          ✨ Meditation & AI Companion
-        </h1>
-        <p class="text-slate-400 text-sm">Peaceful meditation and simple conversations with spiritual guides</p>
-      </div>
-      <button onclick="window.print()" class="no-print mt-4 md:mt-0 bg-slate-800 hover:bg-slate-700 text-teal-300 border border-teal-500/30 px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2">
-        <i class="fa-solid fa-file-pdf"></i> Export PDF Summary
-      </button>
-    </header>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Meditation Section -->
-      <section class="glass-card rounded-2xl p-6 flex flex-col items-center justify-between space-y-6">
-        <h2 class="text-xl font-semibold text-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-wind text-teal-400"></i> Breathing Space
-        </h2>
-
-        <!-- Visual Breathing Assistant -->
-        <div class="relative w-48 h-48 flex items-center justify-center my-4">
-          <div class="breath-circle absolute inset-0 rounded-full bg-teal-500/20 blur-md"></div>
-          <div class="w-32 h-32 rounded-full border-2 border-teal-400/40 flex items-center justify-center text-center p-2 z-10">
-            <span id="breath-text" class="text-teal-300 text-sm font-medium">Breathe In...</span>
-          </div>
-        </div>
-
-        <!-- Timer Controls -->
-        <div class="w-full space-y-3">
-          <div class="flex justify-between text-slate-300 text-sm">
-            <span>Timer</span>
-            <span id="timer-display" class="font-mono text-teal-400">05:00</span>
-          </div>
-          <div class="flex gap-2">
-            <button id="start-btn" onclick="toggleTimer()" class="flex-1 bg-teal-600 hover:bg-teal-500 text-white font-medium py-2 rounded-xl transition">
-              Start Session
-            </button>
-            <button onclick="resetTimer()" class="px-4 bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium py-2 rounded-xl transition">
-              Reset
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- AI Guide Chat Section -->
-      <section class="glass-card rounded-2xl p-6 flex flex-col justify-between h-[450px]">
-        <div>
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-slate-200 flex items-center gap-2">
-              <i class="fa-solid fa-sparkles text-amber-400"></i> Talk to AI Guide
-            </h2>
-            <select id="guide-select" class="bg-slate-800 border border-slate-700 text-xs text-amber-300 rounded-lg p-2 focus:outline-none">
-              <option value="Bashar">Bashar (Excitement & Alignment)</option>
-              <option value="Eckhart Tolle">Eckhart Tolle (Present Moment)</option>
-              <option value="Abraham Hicks">Abraham Hicks (Vibration & Joy)</option>
-            </select>
-          </div>
-
-          <!-- Chat Box -->
-          <div id="chat-box" class="h-64 overflow-y-auto space-y-3 p-3 bg-slate-900/50 rounded-xl text-sm border border-slate-800">
-            <div class="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20">
-              <span id="guide-name" class="font-bold text-amber-300 block mb-1">Bashar:</span>
-              <p class="text-slate-200" id="guide-msg">Hello Haru! Follow your highest excitement today. What is on your mind?</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Input Area -->
-        <div class="flex gap-2 mt-4 no-print">
-          <input type="text" id="user-input" placeholder="Type a simple question..." class="flex-1 bg-slate-800 border border-slate-700 text-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-400" onkeypress="handleKeyPress(event)">
-          <button onclick="sendMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
-            Send
-          </button>
-        </div>
-      </section>
-    </div>
+<body>
+<header>
+  <h1>Meditation & AI Companion</h1>
+  <p class="sub">静けさから、言葉が生まれる。好きな言葉で、やさしく英語を。</p>
+  <div class="bar no-print">
+    <label>速さ
+      <select id="rate"><option value="0.6">ゆっくり</option><option value="0.85" selected>ふつう</option><option value="1">はやい</option></select>
+    </label>
+    <button id="tgl">日本語訳を隠す</button>
+    <button id="print">PDF保存・印刷</button>
   </div>
+  <p id="progress" class="small"></p>
+</header>
 
-  <script>
-    // Simple Timer Logic
-    let secondsLeft = 300;
-    let timerInterval = null;
+<nav id="tabs" class="no-print">
+  <button data-tab="breath" class="on">呼吸</button>
+  <button data-tab="words">単語</button>
+  <button data-tab="phrases">フレーズ</button>
+  <button data-tab="first">最初の一言</button>
+  <button data-tab="quiz">クイズ</button>
+  <button data-tab="chat">ガイド</button>
+</nav>
 
-    function updateDisplay() {
-      const mins = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
-      const secs = String(secondsLeft % 60).padStart(2, '0');
-      document.getElementById('timer-display').innerText = `${mins}:${secs}`;
-    }
+<main>
+  <section id="breath" class="panel on">
+    <h2>Breathing Space（呼吸の時間）</h2>
+    <div class="orb"><div class="glow"></div><div class="ring"><span id="breath-text">Breathe in</span></div></div>
+    <div class="timer" id="timer-display">05:00</div>
+    <div class="row no-print">
+      <button id="start-btn" class="main">Start Session</button>
+      <button id="reset-btn">Reset</button>
+    </div>
+  </section>
 
-    function toggleTimer() {
-      const btn = document.getElementById('start-btn');
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-        btn.innerText = "Resume Session";
-      } else {
-        btn.innerText = "Pause Session";
-        timerInterval = setInterval(() => {
-          if (secondsLeft > 0) {
-            secondsLeft--;
-            updateDisplay();
-          } else {
-            clearInterval(timerInterval);
-            alert("Meditation complete. Take a deep breath!");
-          }
-        }, 1000);
-      }
-    }
+  <section id="words" class="panel"><h2>スピリチュアル英単語</h2><div id="words-list"></div></section>
 
-    function resetTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      secondsLeft = 300;
-      updateDisplay();
-      document.getElementById('start-btn').innerText = "Start Session";
-    }
+  <section id="phrases" class="panel">
+    <h2>英語フレーズ</h2><div id="phrases-list"></div>
+    <h2>ホ・オポノポノの4つの言葉</h2>
+    <p class="small">ハワイ発祥とされる癒しの実践で語られる言葉です。医療や心理療法の代わりではありません。</p>
+    <div id="hopono-list"></div>
+    <label class="small no-print">今日の振り返り（この端末にだけ保存されます）<br>
+      <textarea id="reflect" rows="3" placeholder="今日、声に出してみてどう感じましたか？"></textarea></label>
+  </section>
 
-    // 100 Spiritual Phrases (33-34 per guide)
-    const responses = {
-      "Bashar": [
-        "Act on your excitement with no expectation of a specific outcome.",
-        "You are always fully supported by the universe.",
-        "Stay present and trust your inner joy.",
-        "Follow your highest passion with integrity.",
-        "Every moment is a fresh new beginning.",
-        "Choose the perspective that brings you peace.",
-        "Your beliefs create your absolute reality.",
-        "Let go of how you think things should happen.",
-        "Excitement is your compass to your true path.",
-        "You are a magnificent infinite being of light.",
-        "Trust the timing of your life and unfoldment.",
-        "Breathe deeply and release all heavy resistance.",
-        "The universe loves you unconditionally right now.",
-        "Listen to the quiet whisper of your intuition.",
-        "Embrace change as an adventure of consciousness.",
-        "You carry the power to transform your entire world.",
-        "Simplicity and clarity bring immediate alignment.",
-        "Be bold and express your authentic self freely.",
-        "Joy is your natural and eternal state of being.",
-        "Every single challenge holds a hidden gift.",
-        "Step forward into the unknown with total excitement.",
-        "Allow yourself to receive the abundance around you.",
-        "Peace begins the moment you accept what is.",
-        "Your imagination is the blueprint of your future.",
-        "Connect with your heart and feel the expansion.",
-        "Letting go of control is true spiritual freedom.",
-        "Shine your unique light without any hesitation.",
-        "Harmony is found within, never in the outside world.",
-        "Everything in your reality is a perfect mirror.",
-        "Celebrate who you are right at this very second.",
-        "Open your mind to infinite new possibilities.",
-        "You are exactly where you need to be to grow.",
-        "Breathe out fear and breathe in pure love."
-      ],
-      "Eckhart Tolle": [
-        "Be here in the present moment.",
-        "Observe your thoughts without any judgment.",
-        "Peace is already inside you right now.",
-        "Realize that the present moment is all you ever have.",
-        "Accept this moment as if you had chosen it.",
-        "You are not your busy and restless thoughts.",
-        "Stess is caused by being here but wanting to be there.",
-        "True intelligence operates silently beyond the mind.",
-        "Feel the aliveness inside your physical body.",
-        "Whenever you recognize illusion, the illusion dissolves.",
-        "Surrender to what is and let go of inner struggle.",
-        "Awareness is the greatest agent for positive change.",
-        "Look at a tree or a flower without naming it.",
-        "Silence is the birthplace of true creativity.",
-        "Drop into the depth of now and find complete rest.",
-        "Your true nature is timeless consciousness itself.",
-        "Let go of mental labels and simply experience life.",
-        "Unhappiness cannot truly exist in the conscious present.",
-        "Listen to the space between words and sounds.",
-        "Forgiveness means letting go of your past story.",
-        "Find the still point at the center of your life.",
-        "Being deeply rooted in the now brings lasting grace.",
-        "Observe the ego and do not take it personally.",
-        "Contentment is independent of outer conditions.",
-        "Rest in the unmanifested realm of pure spirit.",
-        "Every habit is an unconscious repetition of the past.",
-        "Acknowledgment of the good already present is true wealth.",
-        "Let the breath anchor you back to safety.",
-        "Space and stillness are your closest spiritual allies.",
-        "Step out of the time trap and awaken today.",
-        "Love does not want or fear anything.",
-        "Peace is the absence of mental resistance.",
-        "Be the silent watcher of your own experience."
-      ],
-      "Abraham Hicks": [
-        "Feel good first, and everything else follows naturally!",
-        "You are in the vortex when you feel pure joy.",
-        "All is well, and you are doing wonderfully fine.",
-        "Appreciation is the highest vibrational frequency.",
-        "Nothing is more important than that you feel good.",
-        "The universe is constantly responding to your alignment.",
-        "You can be, do, or have anything you desire.",
-        "Relax and let the stream of wellbeing carry you.",
-        "Look for things that make you feel joyful today.",
-        "Your power lies entirely in the present moment.",
-        "Intention sets the energy flowing in your life.",
-        "You are a powerful creator shaping your own reality.",
-        "Stop pushing against things and simply allow.",
-        "Joy is your birthright and natural guidance system.",
-        "Expect wonderful things to unfold for you effortlessly.",
-        "The contrast you experience helps you clarify your desires.",
-        "Praise is the vibration of pure love and connection.",
-        "Treat yourself with kindness and gentle patience.",
-        "Align with your source energy and feel the power.",
-        "Life is supposed to be fun and deeply satisfying.",
-        "Release the oars and let the river take you forward.",
-        "You are loved beyond measure by the universe.",
-        "Eagerness is the vibration of joyful anticipation.",
-        "Focus on what feels good right here, right now.",
-        "Your clarity comes from living your vibrant life.",
-        "Allow the well-being that is naturally yours to flow.",
-        "Success is a state of joyful expectation.",
-        "Speak words of encouragement to your own soul.",
-        "You are the eternal creator of your destiny.",
-        "Grateful hearts attract wonderful treasures daily.",
-        "Laugh often and let your spirit soar high.",
-        "There is nothing to fix, only love to experience.",
-        "You are expanding into greater joy every day."
-      ]
-    };
+  <section id="first" class="panel"><h2>最初の一言を練習する</h2>
+    <p class="small">ボタンを押すと音が流れます。聞いたあと、声に出して真似してみましょう。間違いはありません。</p>
+    <div id="first-list"></div></section>
 
-    function sendMessage() {
-      const input = document.getElementById('user-input');
-      const text = input.value.trim();
-      if (!text) return;
+  <section id="quiz" class="panel"><h2>選んで覚えるクイズ</h2><div id="quiz-box"></div><p id="wrong-info" class="small"></p></section>
 
-      const chatBox = document.getElementById('chat-box');
-      const guide = document.getElementById('guide-select').value;
+  <section id="chat" class="panel">
+    <h2>ガイドの言葉</h2>
+    <select id="guide-select"></select>
+    <p class="small">これはAIではありません。用意した「学習用オリジナル英文」から選ばれて表示されます（本人の発言ではありません）。</p>
+    <div id="chat-box"></div>
+    <div class="row no-print">
+      <input id="user-input" type="text" placeholder="今の気持ちを書いてみる">
+      <button id="send" class="main">送る</button>
+    </div>
+  </section>
+</main>
 
-      // User Message
-      chatBox.innerHTML += `<div class="bg-slate-800 p-3 rounded-lg text-slate-300 border border-slate-700"><strong>You:</strong> ${text}</div>`;
-      input.value = '';
+<footer class="small">学習記録はこのブラウザ内に保存されます。ブラウザのデータを消すと記録も消えます。</footer>
 
-      // AI Guide Response
-      setTimeout(() => {
-        const guideList = responses[guide];
-        const randomReply = guideList[Math.floor(Math.random() * guideList.length)];
-        chatBox.innerHTML += `<div class="bg-indigo-900/40 p-3 rounded-lg border border-indigo-500/20"><strong class="text-amber-300">${guide}:</strong> ${randomReply}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }, 600);
-    }
-
-    function handleKeyPress(event) {
-      if (event.key === 'Enter') {
-        sendMessage();
-      }
-    }
-  </script>
+<script src="data/words.js"></script>
+<script src="data/phrases.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
