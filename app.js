@@ -19,12 +19,12 @@ function showProgress(){
 }
 
 // --- 音声（ブラウザの読み上げ機能・無料） ---
-function speak(text, times=1){
+function speak(text, times=1, r){
   if(!('speechSynthesis' in window)){ alert('この端末・ブラウザでは音声読み上げが使えません。Safari や Chrome の最新版でお試しください。'); return; }
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang='en-US'; u.rate=parseFloat($('#rate').value);
-  if(times>1) u.onend=()=>speak(text,times-1);
+  u.lang='en-US'; u.rate=r||parseFloat($('#rate').value);
+  if(times>1) u.onend=()=>speak(text,times-1,r);
   speechSynthesis.speak(u);
 }
 
@@ -77,28 +77,74 @@ SCENES.forEach(s=>{
   $('#first-list').append(c);
 });
 
-// --- クイズ（日本語を見て英語を選ぶ） ---
-function quiz(){
-  const box=$('#quiz-box'); box.textContent='';
-  const pool=PHRASES.concat(HOOPONO);
-  const q=pool[Math.floor(Math.random()*pool.length)];
-  const opts=[q]; while(opts.length<3){ const o=pool[Math.floor(Math.random()*pool.length)]; if(!opts.includes(o)) opts.push(o); }
-  opts.sort(()=>Math.random()-.5);
-  box.append(h('div','q','「'+q.ja+'」を英語で言うと？'));
-  const fb=h('div','fb');
-  opts.forEach(o=>{
-    const b=h('button','opt',o.en);
-    b.onclick=()=>{
-      if(o===q){ fb.textContent='⭕ せいかい！ '+q.note; speak(q.en); save.wrong=save.wrong.filter(x=>x!==q.en); }
-      else { fb.textContent='🌱 おしい！ 答えは "'+q.en+'" です。'+q.note; if(!save.wrong.includes(q.en)) save.wrong.push(q.en); }
-      persist(); showProgress();
-    };
-    box.append(b);
-  });
-  const n=h('button','main','次の問題'); n.onclick=quiz;
-  box.append(fb,n);
+// --- テーマ別学習 ---
+THEMES.forEach(t=>{
+  const c=h('div','card'); c.append(h('div','en',t.title));
+  t.items.forEach(it=>{ const row=h('div','row'); const b=h('button','',it.en+' 🔊'); b.onclick=()=>speak(it.en); row.append(b,h('span','ja small',it.ja)); c.append(row); });
+  $('#theme-list').append(c);
+});
+
+// --- 英文を作る練習（6段階） ---
+const MODES=[['match','1 意味を選ぶ'],['choose','2 正しい英文'],['fill','3 空欄'],['order','4 並べ替え'],['read','5 音読'],['recall','6 思い出す']];
+let mode='match';
+const pool=()=>PHRASES.concat(HOOPONO);
+const shuffle=a=>a.slice().sort(()=>Math.random()-.5);
+const pick=()=>{const p=pool();return p[Math.floor(Math.random()*p.length)];};
+const clean=w=>w.replace(/[.,?!]/g,'');
+function addWrong(k){ if(!save.wrong.includes(k)) save.wrong.push(k); persist(); showProgress(); }
+function dropWrong(k){ save.wrong=save.wrong.filter(x=>x!==k); persist(); showProgress(); }
+function mcq(box,text,opts,right,q){
+  box.append(h('div','q',text)); const fb=h('div','fb');
+  shuffle(opts).forEach(o=>{ const b=h('button','opt',o); b.onclick=()=>{
+    if(o===right){ fb.textContent='⭕ せいかい！ '+(q.note||''); speak(q.en); dropWrong(q.en); }
+    else { fb.textContent='🌱 おしい！ 答えは「'+right+'」です。'+(q.note||''); addWrong(q.en); }
+  }; box.append(b); });
+  box.append(fb);
 }
-quiz();
+function practice(){
+  const box=$('#quiz-box'); box.textContent='';
+  document.querySelectorAll('#modes button').forEach(b=>b.classList.toggle('sel',b.dataset.m===mode));
+  const q=pick(); const toks=q.en.split(' ');
+  if(mode==='match'){
+    const o=[q]; while(o.length<3){ const x=pick(); if(!o.includes(x)) o.push(x); }
+    mcq(box,'「'+q.ja+'」を英語で言うと？',o.map(x=>x.en),q.en,q);
+  } else if(mode==='choose'){
+    let v=[toks.slice().reverse().join(' '),shuffle(toks).join(' ')].filter((x,i,a)=>x!==q.en&&a.indexOf(x)===i);
+    while(v.length<2){ const x=pick().en; if(x!==q.en&&!v.includes(x)) v.push(x); }
+    mcq(box,'正しい英文はどれ？「'+q.ja+'」',[q.en,v[0],v[1]],q.en,q);
+  } else if(mode==='fill'){
+    const idx=toks.map((t,i)=>clean(t).length>=3?i:-1).filter(i=>i>=0); const i=idx.length?idx[Math.floor(Math.random()*idx.length)]:0;
+    const ans=clean(toks[i]); const o=[ans];
+    while(o.length<3){ const ws=pick().en.split(' ').map(clean).filter(w=>w.length>=3); const w=ws[Math.floor(Math.random()*ws.length)]; if(w&&!o.includes(w)) o.push(w); }
+    const t2=toks.slice(); t2[i]=t2[i].replace(ans,'____');
+    mcq(box,'「'+q.ja+'」　'+t2.join(' '),o,ans,q);
+  } else if(mode==='order'){
+    box.append(h('div','q','「'+q.ja+'」を英語に並べましょう'));
+    const out=h('div','card','　'); const row=h('div','row'); const fb=h('div','fb'); let got=[];
+    shuffle(toks).forEach(t=>{ const b=h('button','',t); b.onclick=()=>{ got.push(t); b.disabled=true; out.textContent=got.join(' ');
+      if(got.length===toks.length){ if(got.join(' ')===q.en){ fb.textContent='⭕ せいかい！'; speak(q.en); dropWrong(q.en); } else { fb.textContent='🌱 おしい！ 答えは「'+q.en+'」です。'; addWrong(q.en); } } }; row.append(b); });
+    const rs=h('button','','やり直し'); rs.onclick=practice;
+    box.append(out,row,rs,fb);
+  } else if(mode==='read'){
+    box.append(h('div','q',q.en),h('div','ja',q.ja),h('div','small','発音：'+q.pron));
+    const r=h('div','row'); const fb=h('div','fb');
+    const b1=h('button','','🔊 聞く'); b1.onclick=()=>speak(q.en);
+    const b2=h('button','','🐢 ゆっくり'); b2.onclick=()=>speak(q.en,1,0.5);
+    const b3=h('button','main','声に出した！'); b3.onclick=()=>{ fb.textContent='👏 すばらしい！ 声に出せました。'; };
+    r.append(b1,b2,b3); box.append(r,fb);
+  } else {
+    box.append(h('div','q','「'+q.ja+'」を、英語で思い出してみましょう'));
+    const ans=h('div','card','');  const r=h('div','row');
+    const show=h('button','','答えを見る');
+    show.onclick=()=>{ ans.textContent=q.en; speak(q.en); r.textContent='';
+      const ok=h('button','main','言えた'); ok.onclick=()=>{ dropWrong(q.en); practice(); };
+      const ng=h('button','','まだ'); ng.onclick=()=>{ addWrong(q.en); practice(); }; r.append(ok,ng); };
+    r.append(show); box.append(ans,r);
+  }
+  const n=h('button','main','次の問題'); n.onclick=practice; box.append(n);
+}
+MODES.forEach(m=>{ const b=h('button','',m[1]); b.dataset.m=m[0]; b.onclick=()=>{ mode=m[0]; practice(); }; $('#modes').append(b); });
+practice();
 
 // --- ガイド（定型文。AIではありません） ---
 const gs=$('#guide-select');

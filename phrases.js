@@ -54,3 +54,40 @@ const GUIDES = {
   {en:"You can relax and allow.",ja:"力を抜いて受け入れて大丈夫です。"},
   {en:"Be kind to yourself.",ja:"自分にやさしくしましょう。"}]
 };
+
+// ---- 追加のフレーズ15個 ----
+PHRASES.push(
+{en:"I am thankful.",ja:"私はありがたく思います。",pron:"アイ アム サンクフル",note:""},
+{en:"I feel joy.",ja:"私は喜びを感じます。",pron:"アイ フィール ジョイ",note:""},
+{en:"I am learning.",ja:"私は学んでいます。",pron:"アイ アム ラーニング",note:""},
+{en:"I believe in myself.",ja:"私は自分を信じます。",pron:"アイ ビリーヴ イン マイセルフ",note:""},
+{en:"I forgive myself.",ja:"私は自分を許します。",pron:"アイ フォギヴ マイセルフ",note:""},
+{en:"I am kind to myself.",ja:"私は自分にやさしくします。",pron:"アイ アム カインド トゥ マイセルフ",note:""},
+{en:"I feel safe now.",ja:"私は今、安心しています。",pron:"アイ フィール セイフ ナウ",note:""},
+{en:"I listen to my heart.",ja:"私は心の声を聞きます。",pron:"アイ リスン トゥ マイ ハート",note:""},
+{en:"I welcome change.",ja:"私は変化を歓迎します。",pron:"アイ ウェルカム チェインジ",note:""},
+{en:"I am doing my best.",ja:"私はベストを尽くしています。",pron:"アイ アム ドゥーイング マイ ベスト",note:""},
+{en:"I take a deep breath.",ja:"私は深呼吸をします。",pron:"アイ テイク ア ディープ ブレス",note:""},
+{en:"I trust the process.",ja:"私は流れを信頼します。",pron:"アイ トラスト ザ プロセス",note:""},
+{en:"I am not alone.",ja:"私は一人ではありません。",pron:"アイ アム ノット アローン",note:""},
+{en:"I love this moment.",ja:"私はこの瞬間が好きです。",pron:"アイ ラヴ ディス モーメント",note:""},
+{en:"I am ready.",ja:"私は準備ができています。",pron:"アイ アム レディ",note:""}
+);
+
+// ---- ガイドの言葉を追加（学習用オリジナル英文・本人の発言ではありません） ----
+GUIDES["Bashar（ワクワクと一致）"].push({en:"Be true to yourself.",ja:"自分に正直でいましょう。"},{en:"Small steps are enough.",ja:"小さな一歩で十分です。"},{en:"Joy is a good guide.",ja:"喜びは良い道しるべです。"},{en:"Let go of how it should be.",ja:"こうあるべきを手放しましょう。"});
+GUIDES["Eckhart Tolle（今ここ）"].push({en:"This moment is enough.",ja:"この瞬間で十分です。"},{en:"Notice the silence.",ja:"静けさに気づきましょう。"},{en:"You are not your thoughts.",ja:"あなたは考えそのものではありません。"},{en:"Accept what is.",ja:"今あるものを受け入れましょう。"});
+GUIDES["Abraham Hicks（心地よさと喜び）"].push({en:"Choose a better feeling.",ja:"少し良い気分を選びましょう。"},{en:"Appreciate what you see.",ja:"目に入るものに感謝しましょう。"},{en:"All is well.",ja:"すべてうまくいっています。"},{en:"Enjoy the moment.",ja:"この瞬間を楽しみましょう。"});
+
+// ===== テーマ別学習（すべて学習用オリジナル英文。本人の発言ではありません） =====
+const THEMES = [
+ {title:"Bashar に関連するテーマ：ワクワク",items:[{en:"I follow my excitement.",ja:"私はワクワクに従います。"},{en:"I take one small step.",ja:"私は小さな一歩を踏み出します。"},{en:"I am true to myself.",ja:"私は自分に正直です。"}]},
+ {title:"Eckhart Tolle に関連するテーマ：静けさ",items:[{en:"I watch my thoughts.",ja:"私は自分の考えを眺めます。"},{en:"I enjoy the silence.",ja:"私は静けさを楽しみます。"},{en:"I am not my mind.",ja:"私は自分の考えそのものではありません。"}]},
+ {title:"Abraham Hicks に関連するテーマ：心地よさ",items:[{en:"I choose a better feeling.",ja:"私は少し良い気分を選びます。"},{en:"I relax and allow.",ja:"私は力を抜いて受け入れます。"},{en:"Life can be fun.",ja:"人生は楽しいものになれます。"}]},
+ {title:"ホ・オポノポノ",items:[{en:"I'm sorry.",ja:"ごめんなさい。"},{en:"Please forgive me.",ja:"どうか許してください。"},{en:"Thank you. I love you.",ja:"ありがとう。愛しています。"}]},
+ {title:"感謝",items:[{en:"I am grateful for today.",ja:"私は今日に感謝しています。"},{en:"Thank you for this day.",ja:"この一日をありがとう。"},{en:"I see many blessings.",ja:"私はたくさんの恵みに気づきます。"}]},
+ {title:"愛と許し",items:[{en:"I give love.",ja:"私は愛を与えます。"},{en:"I forgive and move on.",ja:"私は許して前に進みます。"},{en:"I am kind to others.",ja:"私は人にやさしくします。"}]},
+ {title:"今ここにいること",items:[{en:"I am here now.",ja:"私は今ここにいます。"},{en:"I feel my feet.",ja:"私は足の感覚を感じます。"},{en:"I breathe and relax.",ja:"私は息をして力を抜きます。"}]},
+ {title:"不安を手放すこと",items:[{en:"I let go of worry.",ja:"私は心配を手放します。"},{en:"I am safe right now.",ja:"私は今、安全です。"},{en:"One breath at a time.",ja:"一呼吸ずつ。"}]},
+ {title:"自分を信頼すること",items:[{en:"I trust myself.",ja:"私は自分を信頼します。"},{en:"I am enough.",ja:"私はそのままで十分です。"},{en:"I can do this.",ja:"私にはできます。"}]}
+];

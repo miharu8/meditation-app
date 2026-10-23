@@ -1,5 +1,5 @@
 // 通信できるときは最新を取得し、できないときは保存済みを表示します
-const V = 'mac-v1';
+const V = 'mac-v2';
 const FILES = ['./','index.html','style.css','app.js','words.js','phrases.js','manifest.json','icon.svg'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
