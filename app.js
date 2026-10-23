@@ -1,3 +1,8 @@
+// ===== 読み込みエラーを画面に表示（原因をすぐ見つけるため） =====
+function showErr(m){const d=document.createElement('div');d.style.cssText='background:#7f1d1d;color:#fff;padding:10px;margin:8px;border-radius:10px;font-size:.85rem';d.textContent=m;document.body.prepend(d);}
+window.addEventListener('error',e=>showErr('エラー：'+e.message+'（'+String(e.filename||'').split('/').pop()+'）'));
+if(typeof WORDS==='undefined'){window.WORDS=[];showErr('words.js が読み込めていません。GitHubに words.js がアップロードされているか確認してください。');}
+if(typeof PHRASES==='undefined'){window.PHRASES=[];window.HOOPONO=[];window.SCENES=[];window.GUIDES={};showErr('phrases.js が読み込めていません。GitHubに phrases.js がアップロードされているか確認してください。');}
 // ===== 画面操作・学習処理・音声処理 =====
 const $ = s => document.querySelector(s);
 function h(tag, cls, txt){ const e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e; } // textContentなので入力は安全に表示されます
